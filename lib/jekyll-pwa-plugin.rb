@@ -2,12 +2,12 @@ class SWHelper
     def initialize(site, config)
         @site = site
         @config = config
-        @sw_filename = @config['sw_filename'] || 'service-worker'
+        @sw_filename = @config['sw_filename'] || 'service-worker.js'
     end
 
     def write_sw_register()
         sw_register_filename = 'sw-register.js'
-        sw_register_file = File.new(File.join(@site.dest, sw_register_filename), 'w')
+        sw_register_file = File.new(@site.in_dest_dir(sw_register_filename), 'w')
         # add build version in url params
         sw_register_file.puts(
         <<-SCRIPT
@@ -20,7 +20,7 @@ class SWHelper
 
     def generate_workbox_precache()
         directory = @config['precache_glob_directory'] || '/'
-        directory = File.join(@site.dest, directory)
+        directory = @site.in_dest_dir(directory)
         patterns = @config['precache_glob_patterns'] || ['**/*.{html,js,css,eot,svg,ttf,woff}']
         ignores = @config['precache_glob_ignores'] || []
         recent_posts_num = @config['precache_recent_posts_num']
@@ -78,11 +78,12 @@ class SWHelper
         cache_name = @config['cache_name'] || 'workbox'
         precache_channel_name = @config['precache_channel_name'] || 'sw-precache'
         runtime_cache = @config['runtime_cache'] || []
+        dest_js_directory = @config['dest_js_directory'] || 'js'
 
         # copy polyfill & workbox.js to js/
         copied_vendor_files = []
-        script_directory = File.join(@site.dest, 'js')
-        FileUtils.mkdir(script_directory) unless Dir.exist?(script_directory)
+        script_directory = @site.in_dest_dir(dest_js_directory)
+        FileUtils.mkdir_p(script_directory) unless Dir.exist?(script_directory)
         Dir.glob(File.expand_path('../vendor/**/*', __FILE__)) do |filepath_to_copy|
             basename = File.basename(filepath_to_copy)
             FileUtils.copy_file(filepath_to_copy, File.join(script_directory, basename))
@@ -105,13 +106,14 @@ class SWHelper
         .join("\n")
 
         # write service-worker.js
-        import_scripts_str = copied_vendor_files.map do |vendor_file|
+        import_scripts_str = copied_vendor_files.map do |vendor_filename|
+            vendor_url = File.join(@site.baseurl, dest_js_directory, vendor_filename)
             <<-SCRIPT
-                importScripts('#{@site.baseurl}/js/#{vendor_file}');
+                importScripts('#{vendor_url}');
             SCRIPT
         end
         .join("\n")
-        sw_file = File.new(File.join(@site.dest, @sw_filename), 'w')
+        sw_file = File.new(@site.in_dest_dir(@sw_filename), 'w')
         sw_file.puts(
         <<-SCRIPT
             #{import_scripts_str}
