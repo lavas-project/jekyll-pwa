@@ -81,9 +81,11 @@ class SWHelper
 
         # copy polyfill & workbox.js to js/
         copied_vendor_files = []
+        script_directory = File.join(@site.dest, 'js')
+        FileUtils.mkdir(script_directory) unless Dir.exist?(script_directory)
         Dir.glob(File.expand_path('../vendor/**/*', __FILE__)) do |filepath_to_copy|
             basename = File.basename(filepath_to_copy)
-            FileUtils.copy_file(filepath_to_copy, File.join(@site.dest, 'js', basename))
+            FileUtils.copy_file(filepath_to_copy, File.join(script_directory, basename))
             copied_vendor_files.push(basename)
         end
 
