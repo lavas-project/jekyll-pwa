@@ -10,13 +10,23 @@ Google Workbox has already developed a series of [tools](https://developers.goog
 
 This plugin is available as a [RubyGem][ruby-gem].
 
-Add this line to your application's `Gemfile`:
+### Option #1
 
-```
-gem 'jekyll-pwa-plugin'
+Add `gem 'jekyll-pwa-plugin'` to the `jekyll_plugin` group in your `Gemfile`:
+
+```ruby
+source 'https://rubygems.org'
+
+gem 'jekyll'
+
+group :jekyll_plugins do
+  gem 'jekyll-pwa-plugin'
+end
 ```
 
-And then execute the `bundle` command to install the gem.
+Then run `bundle` to install the gem.
+
+### Option #2
 
 Alternatively, you can also manually install the gem using the following command:
 
