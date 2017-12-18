@@ -6,6 +6,8 @@ This plugin provides PWA support for Jekyll. Generate a service worker and provi
 
 Google Workbox has already developed a series of [tools](https://developers.google.com/web/tools/workbox/). If you use Webpack or Gulp as your build tool, you can easily generate a service worker with these tools. But in my blog, I don't want to use even npm, and I want to precache recent 10 posts so that they are offline available to visitors even though these posts were never opened by visitors before. That's why I try to integrate this function in Jekyll build process.
 
+This plugin has been used in [my blog](https://xiaoiver.github.io) so that you can see the effect.
+
 ## Installation
 
 This plugin is available as a [RubyGem][ruby-gem].
