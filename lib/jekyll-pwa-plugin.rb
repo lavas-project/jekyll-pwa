@@ -11,8 +11,26 @@ class SWHelper
         # add build version in url params
         sw_register_file.puts(
         <<-SCRIPT
-            navigator.serviceWorker
-                && navigator.serviceWorker.register('/#{@sw_filename}?v=#{@site.time.to_i.to_s}');
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/#{@sw_filename}?v=#{@site.time.to_i.to_s}').then(function(reg) {
+                reg.onupdatefound = function() {
+                    var installingWorker = reg.installing;
+                    installingWorker.onstatechange = function() {
+                        switch (installingWorker.state) {
+                            case 'installed':
+                                if (navigator.serviceWorker.controller) {
+                                    var event = document.createEvent('Event');
+                                    event.initEvent('sw.update', true, true);
+                                    window.dispatchEvent(event);
+                                }
+                                break;
+                        }
+                    };
+                };
+            }).catch(function(e) {
+                console.error('Error during service worker registration:', e);
+            });
+        }
         SCRIPT
         )
         sw_register_file.close
@@ -76,7 +94,6 @@ class SWHelper
 
     def write_sw()
         cache_name = @config['cache_name'] || 'workbox'
-        precache_channel_name = @config['precache_channel_name'] || 'sw-precache'
         runtime_cache = @config['runtime_cache'] || []
         dest_js_directory = @config['dest_js_directory'] || 'js'
 
@@ -121,8 +138,7 @@ class SWHelper
                 cacheId: '#{cache_name}',
                 ignoreUrlParametersMatching: [/^utm_/],
                 skipWaiting: true,
-                clientsClaim: true,
-                precacheChannelName: '#{precache_channel_name}'
+                clientsClaim: true
             });
             workboxSW.precache([#{precache_list_str}]);
             #{runtime_cache_str}

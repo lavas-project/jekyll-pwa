@@ -39,7 +39,6 @@ pwa:
   sw_filename: service-worker.js # Required
   dest_js_directory: assets/js # Required
   cache_name: my-cache # Optional
-  precache_channel_name: sw-precache # Optional
   precache_recent_posts_num: 5 # Optional
   precache_glob_directory: / # Optional
   precache_glob_patterns: # Optional
@@ -60,7 +59,6 @@ Parameter                 | Description
 sw_filename               | Filename of service worker.
 dest_js_directory         | Directory of JS in `_site`. During the build process, some JS like workbox.js will be copied to this directory so that service worker can import them in runtime.
 cache_name                | Name of cache.
-precache_channel_name     | Name of broadcast channel which listens to update event. When precached resouces get changed, Workbox will broadcast an update event through a channel in this name. You can refer to this [example](https://workbox-samples.glitch.me/examples/workbox-sw/).
 precache_glob_directory   | Directory of precache. [Workbox Config](https://developers.google.com/web/tools/workbox/get-started/webpack#optional-config)
 precache_glob_patterns    | Patterns of precache. [Workbox Config](https://developers.google.com/web/tools/workbox/get-started/webpack#optional-config)
 precache_glob_ignores     | Ignores of precache. [Workbox Config](https://developers.google.com/web/tools/workbox/get-started/webpack#optional-config)
@@ -71,7 +69,15 @@ We handle precache and runtime cache with the help of Google Workbox v2.1.1 in s
 
 ## Note
 
+### Generate a manifest.json?
+
 This plugin won't generate a [manifest.json](https://developer.mozilla.org/en-US/docs/Web/Manifest). If you want to support this PWA feature, just add one in your root directory and Jekyll will copy it to `_site`.
+
+### When my site updates...
+
+Since the service worker has precached our assets such as `index.html`, JS files and other static files, we should notify user when our site has something changed. When these updates happen, the service worker will go into the `install` stage and request the newest resources, but the user must refresh current page so that these updates can be applied. A normal solution is showing a toast with the following text: `This site has changed, please refresh current page manually.`.
+
+This plugin will dispatch a custom event called `sw.update` when the service worker has finished the update work. So in your site, you can choose to listen this event and popup a toast to remind users refreshing current page.
 
 # Contribute
 
