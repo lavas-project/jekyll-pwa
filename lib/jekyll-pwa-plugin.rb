@@ -86,7 +86,7 @@ class SWHelper
                 url = filepath.sub(@site.dest, '')
             end
             @precache_list.push({
-                url: @site.baseurl + url,
+                url: @site.baseurl.to_s + url,
                 revision: md5.hexdigest
             })
         end
@@ -124,7 +124,7 @@ class SWHelper
 
         # write service-worker.js
         import_scripts_str = copied_vendor_files.map do |vendor_filename|
-            vendor_url = File.join(@site.baseurl, dest_js_directory, vendor_filename)
+            vendor_url = File.join(@site.baseurl.to_s, dest_js_directory, vendor_filename)
             <<-SCRIPT
                 importScripts('#{vendor_url}');
             SCRIPT
@@ -156,7 +156,7 @@ class SWHelper
                     var firstScript = document.getElementsByTagName('script')[0];
                     script.type = 'text/javascript';
                     script.async = true;
-                    script.src = '#{page.site.baseurl}/sw-register.js?v=' + Date.now();
+                    script.src = '#{page.site.baseurl.to_s}/sw-register.js?v=' + Date.now();
                     firstScript.parentNode.insertBefore(script, firstScript);
                 };
             </script>
