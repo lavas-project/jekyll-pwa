@@ -6,13 +6,6 @@ This plugin provides PWA support for Jekyll. Generate a service worker and provi
 
 Google Workbox has already developed a series of [tools](https://developers.google.com/web/tools/workbox/). If you use Webpack or Gulp as your build tool, you can easily generate a service worker with these tools. But in my blog, I don't want to use even npm, and I want to precache recent 10 posts so that they are offline available to visitors even though these posts were never opened by visitors before. That's why I try to integrate this function in Jekyll build process.
 
-**IMPORTANT** This plugin supports Workbox V3 since `v2.0.1`.
-If you used `v1.x.x` before, a migration guide is [HERE](./MIGRATE.md).
-The API of Workbox V3 has changed a lot compared with V2, some more powerful functions added too.
-I really recommend applying an migration.
-
-Here's the [v1 Doc](./README-v1.md).
-
 This plugin has been used in [my blog](https://xiaoiver.github.io) so that you can see the effect.
 
 ## Installation
@@ -52,14 +45,12 @@ plugins:
 
 ## Getting Started
 
-### Configuration
-
 Add the following configuration block to Jekyll's `_config.yml`:
 ```yaml
 pwa:
-  sw_src_filepath: service-worker.js # Optional
-  sw_dest_filename: service-worker.js # Optional
+  sw_filename: service-worker.js # Required
   dest_js_directory: assets/js # Required
+  cache_name: my-cache # Optional
   precache_recent_posts_num: 5 # Optional
   precache_glob_directory: / # Optional
   precache_glob_patterns: # Optional
@@ -68,64 +59,25 @@ pwa:
   precache_glob_ignores: # Optional
     - sw-register.js
     - "fonts/**/*"
+  runtime_cache: # Optional
+    - route: /^api\/getdata/
+      strategy: networkFirst
+    - route: "'/api/pic'"
+      strategy: cacheFirst
 ```
 
 Parameter                 | Description
 ----------                | ------------
-sw_src_filepath           | Filepath of the source service worker. Defaults to `service-worker.js`
-sw_dest_filename          | Filename of the destination service worker. Defaults to `service-worker.js`
+sw_filename               | Filename of service worker.
 dest_js_directory         | Directory of JS in `_site`. During the build process, some JS like workbox.js will be copied to this directory so that service worker can import them in runtime.
+cache_name                | Name of cache.
 precache_glob_directory   | Directory of precache. [Workbox Config](https://developers.google.com/web/tools/workbox/get-started/webpack#optional-config)
 precache_glob_patterns    | Patterns of precache. [Workbox Config](https://developers.google.com/web/tools/workbox/get-started/webpack#optional-config)
 precache_glob_ignores     | Ignores of precache. [Workbox Config](https://developers.google.com/web/tools/workbox/get-started/webpack#optional-config)
 precache_recent_posts_num | Number of recent posts to precache.
+runtime_cache             | Runtime cache. Register a route and handle matched request with a strategy such as networkFirst, cacheFirst etc. You can refer to this [document](https://developers.google.com/web/tools/workbox/reference-docs/latest/module-workbox-sw.Router) for more information.
 
-We handle precache and runtime cache with the help of Google Workbox v3.3.1 in service worker.
-
-### Write your own Service Worker
-
-Create a `service-worker.js` in the root path of your Jekyll project.
-You can change this source file's path with `sw_src_filepath` option.
-
-Now you can write your own Service Worker with [Workbox APIs](https://developers.google.com/web/tools/workbox/reference-docs/latest/).
-
-Here's what the `service-worker.js` like in my site.
-```javascript
-// service-worker.js
-
-// set names for both precache & runtime cache
-workbox.core.setCacheNameDetails({
-    prefix: 'my-blog',
-    suffix: 'v1',
-    precache: 'precache',
-    runtime: 'runtime-cache'
-});
-
-// let Service Worker take control of pages ASAP
-workbox.skipWaiting();
-workbox.clientsClaim();
-
-// let Workbox handle our precache list
-workbox.precaching.precacheAndRoute(self.__precacheManifest);
-
-// use `networkFirst` strategy for `*.html`, like all my posts
-workbox.routing.registerRoute(
-    /\.html$/,
-    workbox.strategies.networkFirst()
-);
-
-// use `cacheFirst` strategy for images
-workbox.routing.registerRoute(
-    /assets\/(img|icons)/,
-    workbox.strategies.cacheFirst()
-);
-
-// third party files
-workbox.routing.registerRoute(
-    /^https?:\/\/cdn.staticfile.org/,
-    workbox.strategies.staleWhileRevalidate()
-);
-```
+We handle precache and runtime cache with the help of Google Workbox v2.1.1 in service worker.
 
 ## Note
 

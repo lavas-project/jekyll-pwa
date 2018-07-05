@@ -1,8 +1,10 @@
 class SWHelper
+    WORKBOX_VERSION = 'v3.3.1'
     def initialize(site, config)
         @site = site
         @config = config
-        @sw_filename = @config['sw_filename'] || 'service-worker.js'
+        @sw_filename = @config['sw_dest_filename'] || 'service-worker.js'
+        @sw_src_filepath = @config['sw_src_filepath'] || 'service-worker.js'
     end
 
     def write_sw_register()
@@ -93,19 +95,13 @@ class SWHelper
     end
 
     def write_sw()
-        cache_name = @config['cache_name'] || 'workbox'
-        runtime_cache = @config['runtime_cache'] || []
+
         dest_js_directory = @config['dest_js_directory'] || 'js'
 
         # copy polyfill & workbox.js to js/
-        copied_vendor_files = []
         script_directory = @site.in_dest_dir(dest_js_directory)
         FileUtils.mkdir_p(script_directory) unless Dir.exist?(script_directory)
-        Dir.glob(File.expand_path('../vendor/**/*', __FILE__)) do |filepath_to_copy|
-            basename = File.basename(filepath_to_copy)
-            FileUtils.copy_file(filepath_to_copy, File.join(script_directory, basename))
-            copied_vendor_files.push(basename)
-        end
+        FileUtils.cp_r(File.expand_path('../vendor/', __FILE__) + '/.', script_directory)
 
         # generate precache list
         precache_list_str = @precache_list.map do |precache_item|
@@ -113,38 +109,24 @@ class SWHelper
         end
         .join(",")
 
-        # generate runtime cache route
-        runtime_cache_str = runtime_cache.map do |runtime_item|
-            <<-SCRIPT
-                workboxSW.router.registerRoute(#{runtime_item['route']},
-                    workboxSW.strategies.#{runtime_item['strategy'] || 'networkFirst'}());
-            SCRIPT
-        end
-        .join("\n")
-
         # write service-worker.js
-        import_scripts_str = copied_vendor_files.map do |vendor_filename|
-            vendor_url = File.join(@site.baseurl.to_s, dest_js_directory, vendor_filename)
-            <<-SCRIPT
-                importScripts('#{vendor_url}');
-            SCRIPT
-        end
-        .join("\n")
-        sw_file = File.new(@site.in_dest_dir(@sw_filename), 'w')
-        sw_file.puts(
+        sw_src_file_str = File.read(@site.in_source_dir(@sw_src_filepath))
+        workbox_dir = File.join(@site.baseurl.to_s, dest_js_directory, "workbox-#{SWHelper::WORKBOX_VERSION}")
+        import_scripts_str = 
+        <<-SCRIPT
+            importScripts("#{workbox_dir}/workbox-sw.js");
+            workbox.setConfig({modulePathPrefix: "#{workbox_dir}"});
+        SCRIPT
+
+        sw_dest_file = File.new(@site.in_dest_dir(@sw_filename), 'w')
+        sw_dest_file.puts(
         <<-SCRIPT
             #{import_scripts_str}
-            const workboxSW = new WorkboxSW({
-                cacheId: '#{cache_name}',
-                ignoreUrlParametersMatching: [/^utm_/],
-                skipWaiting: true,
-                clientsClaim: true
-            });
-            workboxSW.precache([#{precache_list_str}]);
-            #{runtime_cache_str}
+            self.__precacheManifest = [#{precache_list_str}];
+            #{sw_src_file_str}
         SCRIPT
         )
-        sw_file.close
+        sw_dest_file.close
     end
 
     def self.insert_sw_register_into_body(page)
