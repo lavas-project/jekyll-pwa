@@ -6,6 +6,6 @@ support Workbox V2
 
 * [Fix] #9
 
-# 1.1.0
+# 2.0.1
 
-* [Feature] support Workbox V3
+* [Feature] support Workbox V3, migrate from V2
