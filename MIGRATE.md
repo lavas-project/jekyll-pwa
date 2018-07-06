@@ -5,7 +5,7 @@ Some options in `_config.yml` have changed.
 ### Create your own Service Worker
 
 You need to create a `service-worker.js` in the root path of your Jekyll project.
-Of cause the path can be changed with `sw_src_filepath` option.
+Of course the path can be changed with `sw_src_filepath` option.
 
 **IMPORTANT** `sw_filename` rename to `sw_dest_filename`.
 
