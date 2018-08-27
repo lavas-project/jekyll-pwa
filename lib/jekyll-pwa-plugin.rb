@@ -14,7 +14,7 @@ class SWHelper
         sw_register_file.puts(
         <<-SCRIPT
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/#{@sw_filename}?v=#{@site.time.to_i.to_s}').then(function(reg) {
+            navigator.serviceWorker.register('#{@site.baseurl.to_s}/#{@sw_filename}?v=#{@site.time.to_i.to_s}').then(function(reg) {
                 reg.onupdatefound = function() {
                     var installingWorker = reg.installing;
                     installingWorker.onstatechange = function() {
