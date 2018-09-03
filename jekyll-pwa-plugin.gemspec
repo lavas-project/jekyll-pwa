@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.description = "This plugin provides PWA support for Jekyll. Generate a service worker and provides precache with Google Workbox."
   s.authors     = ["Pan Yuqi"]
   s.email       = 'pyqiverson@gmail.com'
-  s.files       = ["lib/jekyll-pwa-plugin.rb", "lib/vendor/**/*"]
+  s.files       = Dir["lib/*.rb"] + Dir["lib/vendor/**/*"]
   s.homepage    =
     'https://github.com/lavas-project/jekyll-pwa'
   s.license       = 'MIT'
