@@ -9,3 +9,7 @@ support Workbox V2
 # 2.0.1
 
 * [Feature] support Workbox V3, migrate from V2
+
+# 2.1.1
+
+* [Feature] upgrade Workbox@3.4.1
