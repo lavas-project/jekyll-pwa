@@ -1,5 +1,5 @@
 class SWHelper
-    WORKBOX_VERSION = 'v3.3.1'
+    WORKBOX_VERSION = 'v3.6.2'
     def initialize(site, config)
         @site = site
         @config = config
