@@ -6,16 +6,12 @@ This plugin provides PWA support for Jekyll. Generate a service worker and provi
 
 Google Workbox has already developed a series of [tools](https://developers.google.com/web/tools/workbox/). If you use Webpack or Gulp as your build tool, you can easily generate a service worker with these tools. But in my blog, I don't want to use even npm, and I want to precache recent 10 posts so that they are offline available to visitors even though these posts were never opened by visitors before. That's why I try to integrate this function in Jekyll build process.
 
-**IMPORTANT** This plugin supports Workbox V4 since `v3.0.1`.
-
+**IMPORTANT** This plugin supports Workbox V3 since `v2.0.1`.
 If you used `v1.x.x` before, a migration guide is [HERE](./MIGRATE.md).
 The API of Workbox V3 has changed a lot compared with V2, some more powerful functions added too.
-I really recommend applying an migration.  
+I really recommend applying an migration.
+
 Here's the [v1 Doc](./README-v1.md).
-
-If you use `v2.x.x`, the [Doc is also available](./README-v2.md). Some breaking change also prevent v2 configurations to work with v3. Follow the [release notes of Workbox](https://github.com/GoogleChrome/workbox/releases) to understand the changes.
-
-**Curent Workbox Version**: 4.2.0
 
 This plugin has been used in [my blog](https://xiaoiver.github.io) so that you can see the effect.
 
@@ -106,8 +102,8 @@ workbox.core.setCacheNameDetails({
 });
 
 // let Service Worker take control of pages ASAP
-workbox.core.skipWaiting()
-workbox.core.clientsClaim()
+workbox.skipWaiting();
+workbox.clientsClaim();
 
 // let Workbox handle our precache list
 workbox.precaching.precacheAndRoute(self.__precacheManifest);
@@ -115,19 +111,19 @@ workbox.precaching.precacheAndRoute(self.__precacheManifest);
 // use `networkFirst` strategy for `*.html`, like all my posts
 workbox.routing.registerRoute(
     /\.html$/,
-    new workbox.strategies.NetworkFirst()
+    workbox.strategies.networkFirst()
 );
 
 // use `cacheFirst` strategy for images
 workbox.routing.registerRoute(
     /assets\/(img|icons)/,
-    new workbox.strategies.CacheFirst()
+    workbox.strategies.cacheFirst()
 );
 
 // third party files
 workbox.routing.registerRoute(
     /^https?:\/\/cdn.staticfile.org/,
-    new workbox.strategies.StaleWhileRevalidate()
+    workbox.strategies.staleWhileRevalidate()
 );
 ```
 
