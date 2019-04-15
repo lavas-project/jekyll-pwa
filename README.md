@@ -15,7 +15,7 @@ Here's the [v1 Doc](./README-v1.md).
 
 If you use `v2.x.x`, the [Doc is also available](./README-v2.md). Some breaking change also prevent v2 configurations to work with v3. Follow the [release notes of Workbox](https://github.com/GoogleChrome/workbox/releases) to understand the changes.
 
-**Curent Workbox Version**: 4.2.0
+**Curent Workbox Version**: 4.3.0
 
 This plugin has been used in [my blog](https://xiaoiver.github.io) so that you can see the effect.
 
