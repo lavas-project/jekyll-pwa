@@ -57,6 +57,7 @@ plugins:
 Add the following configuration block to Jekyll's `_config.yml`:
 ```yaml
 pwa:
+  enabled: false # Optional
   sw_src_filepath: service-worker.js # Optional
   sw_dest_filename: service-worker.js # Optional
   dest_js_directory: assets/js # Required
@@ -72,6 +73,7 @@ pwa:
 
 Parameter                 | Description
 ----------                | ------------
+enabled                   | Determines whether a sw will be registered and written to disk. Useful to disable when you run into problems in your development environment. Default is `true`.
 sw_src_filepath           | Filepath of the source service worker. Defaults to `service-worker.js`
 sw_dest_filename          | Filename of the destination service worker. Defaults to `service-worker.js`
 dest_js_directory         | Directory of JS in `_site`. During the build process, some JS like workbox.js will be copied to this directory so that service worker can import them in runtime.
