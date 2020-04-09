@@ -151,7 +151,7 @@ end
 module Jekyll
 
     Hooks.register :pages, :post_render do |page|
-      enabled = page.site.config.dig('pwa', 'enabled')
+      enabled = (page.site.config.dig('pwa', 'enabled') != false)
       if enabled
         # append <script> for sw-register.js in <body>
         SWHelper.insert_sw_register_into_body(page)
@@ -159,7 +159,7 @@ module Jekyll
     end
 
     Hooks.register :documents, :post_render do |document|
-      enabled = document.site.config.dig('pwa', 'enabled')
+      enabled = (page.site.config.dig('pwa', 'enabled') != false)
       if enabled
         # append <script> for sw-register.js in <body>
         SWHelper.insert_sw_register_into_body(document)
@@ -167,7 +167,7 @@ module Jekyll
     end
 
     Hooks.register :site, :post_write do |site|
-      enabled = site.config.dig('pwa', 'enabled')
+      enabled = (page.site.config.dig('pwa', 'enabled') != false)
       if enabled
         pwa_config = site.config['pwa'] || {}
         sw_helper = SWHelper.new(site, pwa_config)
