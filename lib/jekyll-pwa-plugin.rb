@@ -14,7 +14,7 @@ class SWHelper
         sw_register_file.puts(
         <<-SCRIPT
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('#{@site.baseurl.to_s}/#{@sw_filename}?v=#{@site.time.to_i.to_s}').then(function(reg) {
+            navigator.serviceWorker.register('#{@site.baseurl.to_s}/#{@sw_filename}').then(function(reg) {
                 reg.onupdatefound = function() {
                     var installingWorker = reg.installing;
                     installingWorker.onstatechange = function() {
@@ -129,21 +129,7 @@ class SWHelper
     end
 
     def self.insert_sw_register_into_body(page)
-        page.output = page.output.sub('</body>',
-        <<-SCRIPT
-            <script>
-                window.onload = function () {
-                    var script = document.createElement('script');
-                    var firstScript = document.getElementsByTagName('script')[0];
-                    script.type = 'text/javascript';
-                    script.async = true;
-                    script.src = '#{page.site.baseurl.to_s}/sw-register.js?v=' + Date.now();
-                    firstScript.parentNode.insertBefore(script, firstScript);
-                };
-            </script>
-            </body>
-        SCRIPT
-        )
+        page.output = page.output.sub('</body>', "<script async src=\"#{page.site.baseurl.to_s}/sw-register.js\"></script></body>")
     end
 end
 
