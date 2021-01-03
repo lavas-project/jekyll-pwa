@@ -21,8 +21,7 @@ class SWHelper
                         switch (installingWorker.state) {
                             case 'installed':
                                 if (navigator.serviceWorker.controller) {
-                                    var event = document.createEvent('Event');
-                                    event.initEvent('sw.update', true, true);
+                                    var event = new Event('sw.update');
                                     window.dispatchEvent(event);
                                 }
                                 break;
