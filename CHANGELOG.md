@@ -13,3 +13,12 @@ support Workbox V2
 # 2.1.1
 
 * [Feature] upgrade Workbox@3.4.1
+
+# 2.2.3
+
+* [Feature] upgrade Workbox@3.6.3
+
+# 5.1.4
+
+* [Feature] upgrade Workbox@5.1.4
+* [Fix] deprecated event.initEvent() - thanks to **rdy4ever**
